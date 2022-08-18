@@ -30,6 +30,7 @@ class Utils {
      * @returns new promise to incur waiting
      */
     static timer(ms) {
+        if (ms == 0) return 
         return new Promise(res => setTimeout(res, ms))
     } 
 }

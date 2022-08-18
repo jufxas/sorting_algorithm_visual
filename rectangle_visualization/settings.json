@@ -6,11 +6,12 @@
     "rectangleComparedColor": "yellow", 
     "rectangleWrongSpotColor": "red", 
     "rectangleCorrectSpotColor": "lime",
-    "compareTime": 0, 
-    "wrongSpotTime": 0, 
-    "swapTime": 0, 
-    "padding": 0, 
-    "numberOfRectangles": 10, 
+    "compareTime": 1, 
+    "wrongSpotTime": 1, 
+    "correctSpotTime": 1, 
+    "swapTime": 1, 
+    "padding": 1, 
+    "numberOfRectangles": 50, 
     "ignorePaddingErrorOn": false, 
     "ignoreSmallWidthErrorOn": false
 } 

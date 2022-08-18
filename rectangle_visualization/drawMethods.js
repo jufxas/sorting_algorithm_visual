@@ -1,5 +1,4 @@
-// Note: make common parameter ordering more consistent across methods 
-
+// drawing approach: first, draw the initial batch of rectangles. then, whenever a rectangle needs to be changed, ONLY change the pixels around that rectangle instead of re-drawing the entire batch. rectangle height information is stored in an array of numbers that're all 0 to 1 exclusive. any time a rectangle needs to change, information about its location is computed based off many inputs 
 
 // collection of methods specifically for the rectangle visualization of the sorting algorithms 
 // RV stands for Rectangle Visualization 
@@ -38,17 +37,17 @@ class RVDrawMethods {
    * Draws the initial batch of rectangles that have a randomized height 
    * @param { Element } canvas canvas to be drawn on 
    * @param { CanvasRenderingContext2D } ctx canvas rendering context to be drawn on 
-   * @param { number } numberOfRectangles number of rectangles to be drawn 
+   * @param { number[] } numbers array to be sorted 
    * @param { string } rectangleFillColor fill color of the rectangle 
    * @param { string } rectangleOutlineColor outline color of the rectangle 
    * @param { number } padding number of pixels between each rectangle
    * @param { number } rectangleMaxHeight maximum height a rectangle can be in pixels; rectangle height is determined by multiplying this by a number from 0 to 1 from some unsorted list 
    * @param { boolean } ignorePaddingError determines if an error is thrown when padding is too large due to the constraints of the canvas width and number of rectangles; defaulted to false 
    * @param { boolean } ignoreSmallWidthError determines if an error is thrown when rectangle width is too small (less than 1) due to the constraints of the canvas width, padding, and number of rectangles; defaulted to false 
-   * @return { number[] } array of numbers from 0 to 1 representing the rectangle heights 
    */
-  static drawRectangleBatch(canvas, ctx, numberOfRectangles, rectangleFillColor, rectangleOutlineColor, padding, rectangleMaxHeight, ignorePaddingError = false, ignoreSmallWidthError = false) {
+  static drawRectangleBatch(canvas, ctx, numbers, rectangleFillColor, rectangleOutlineColor, padding, rectangleMaxHeight, ignorePaddingError = false, ignoreSmallWidthError = false) {
     // calculating width and generating numbers for rectangle heights 
+    const numberOfRectangles = numbers.length
     const rectangleWidth = (canvas.width - padding * numberOfRectangles) / numberOfRectangles 
   
     if (rectangleWidth < 0 && !ignorePaddingError) 
@@ -56,7 +55,6 @@ class RVDrawMethods {
     if (rectangleWidth < 1  && !ignoreSmallWidthError) 
       throw new Error(`rectangleWidth of ${rectangleWidth} will result in incorrect drawing of rectangles `)
   
-    const numbers = Utils.generateNumbers(numberOfRectangles)
     let xCoord = 0 
     
     // drawing each rectangle 
@@ -90,7 +88,7 @@ class RVDrawMethods {
     const xCoord = nthRectangle * (rectangleWidth + padding)
   
     // clear out rectangle 
-    RVDrawMethods.drawRectangle(ctx, xCoord, 0, rectangleWidth, canvas.height, wipeoutColor, wipeoutColor)
+    RVDrawMethods.drawRectangle(ctx, xCoord, 0, rectangleWidth, canvas.height, rectangleOutlineColor, wipeoutColor)
   
     // re-draw rectangle 
     RVDrawMethods.drawRectangle(ctx, xCoord, yCoord, rectangleWidth, rectangleHeight, rectangleOutlineColor, rectangleFillColor)
@@ -128,10 +126,9 @@ class RVDrawMethods {
    * @param { string } rectangleWrongSpotColor color to set the rectangle to 
    * @param { string } wipeoutColor fill & outline color used to wipe out the previous rectangle; should be same as background color 
    */
-  static drawRectangleWrongSpot(canvas, ctx, numbers, index, padding, rectangleMaxHeight, rectangleWrongSpotColor, wipeoutColor) {
+  static drawRectangleWrongSpot(canvas, ctx, numbers, index, padding, rectangleMaxHeight, rectangleWrongSpotColor, rectangleOutlineColor, wipeoutColor) {
 
     let numberOfRectangles = numbers.length
-    let rectangleOutlineColor = rectangleWrongSpotColor
     let nthRectangle = index
     let heightPercentage = numbers[nthRectangle]
     RVDrawMethods.replaceRectangle(canvas, ctx, numberOfRectangles, nthRectangle, rectangleMaxHeight, heightPercentage, padding, wipeoutColor, rectangleWrongSpotColor, rectangleOutlineColor)
@@ -149,10 +146,9 @@ class RVDrawMethods {
    * @param { string } rectangleCorrectSpotColor color to set the rectangle to 
    * @param { string } wipeoutColor fill & outline color used to wipe out the previous rectangle; should be same as background color 
    */
-  static drawRectangleCorrectSpot(canvas, ctx, numbers, index, padding, rectangleMaxHeight, rectangleCorrectSpotColor, wipeoutColor) {
+  static drawRectangleCorrectSpot(canvas, ctx, numbers, index, padding, rectangleMaxHeight, rectangleOutlineColor, rectangleCorrectSpotColor, wipeoutColor) {
 
     let numberOfRectangles = numbers.length
-    let rectangleOutlineColor = rectangleCorrectSpotColor
     let nthRectangle = index
     let heightPercentage = numbers[nthRectangle]
     RVDrawMethods.replaceRectangle(canvas, ctx, numberOfRectangles, nthRectangle, rectangleMaxHeight, heightPercentage, padding, wipeoutColor, rectangleCorrectSpotColor, rectangleOutlineColor)
@@ -180,7 +176,19 @@ class RVDrawMethods {
     RVDrawMethods.replaceRectangle(canvas, ctx, numberOfRectangles, indexA, rectangleMaxHeight, heightPercentageB, padding, wipeoutColor, rectangleFillColor, rectangleOutlineColor)
     RVDrawMethods.replaceRectangle(canvas, ctx, numberOfRectangles, indexB, rectangleMaxHeight, heightPercentageA, padding, wipeoutColor, rectangleFillColor, rectangleOutlineColor)
   }
-
+  
+  /**
+   * Changes rectangle to default color when comparison is done 
+   * @param { Element } canvas canvas to be drawn on 
+   * @param { CanvasRenderingContext2D } ctx canvas rendering context to be drawn on 
+   * @param { number[] } numbers list of number to be sorted 
+   * @param { number } index index of number being colored in the list to be sorted 
+   * @param { number } padding  number of pixels between each rectangle in the batch 
+   * @param { number } rectangleMaxHeight maximum height a rectangle can be in pixels
+   * @param { string } rectangleOutlineColor outline color of the rectangle 
+   * @param { string } rectangleFillColor fill color of the rectangle 
+   * @param { string } wipeoutColor fill & outline color used to wipe out the previous rectangle; should be same as background color
+   */
   static drawRectangleStoppedCompare(canvas, ctx, numbers, index, padding, rectangleMaxHeight, rectangleOutlineColor, rectangleFillColor, wipeoutColor) {
     let numberOfRectangles = numbers.length
     let height = numbers[index]
