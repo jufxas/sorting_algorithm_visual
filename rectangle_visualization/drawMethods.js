@@ -48,7 +48,7 @@ class RVDrawMethods {
   static drawRectangleBatch(canvas, ctx, numbers, rectangleFillColor, rectangleOutlineColor, padding, rectangleMaxHeight, ignorePaddingError = false, ignoreSmallWidthError = false) {
     // calculating width and generating numbers for rectangle heights 
     const numberOfRectangles = numbers.length
-    const rectangleWidth = (canvas.width - padding * numberOfRectangles) / numberOfRectangles 
+    const rectangleWidth = Math.floor((canvas.width - padding * numberOfRectangles) / numberOfRectangles)  // width is floored because weird decimals cause rendering issues. may result in right side having some empty space for some given inputs; but, empty space is more tolerable 
   
     if (rectangleWidth < 0 && !ignorePaddingError) 
       throw new Error(`padding*numberOfRectangles (${padding*numberOfRectangles}) > canvas.width (${canvas.width}) will result in incorrect drawing of rectangles`)
@@ -82,7 +82,7 @@ class RVDrawMethods {
    * @param { string } rectangleOutlineColor outline color of the rectangle 
    */
   static replaceRectangle(canvas, ctx, numberOfRectangles, nthRectangle, rectangleMaxHeight, heightPercentage, padding, wipeoutColor, rectangleFillColor, rectangleOutlineColor) {
-    const rectangleWidth = (canvas.width - padding * numberOfRectangles) / numberOfRectangles 
+    const rectangleWidth = Math.floor((canvas.width - padding * numberOfRectangles) / numberOfRectangles)
     const rectangleHeight = heightPercentage * rectangleMaxHeight
     const yCoord = canvas.height - rectangleHeight
     const xCoord = nthRectangle * (rectangleWidth + padding)
